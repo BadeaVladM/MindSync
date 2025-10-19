@@ -233,6 +233,46 @@
       color: #777;
     }
 
+    /* === POPUP SPECIALIST === */
+    #specialistPopup {
+      position: fixed;
+      bottom: 25px;
+      left: 25px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      padding: 20px;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 260px;
+      font-size: 15px;
+      animation: fadeIn 0.8s ease forwards;
+      border-left: 5px solid #0071e3;
+      z-index: 999;
+    }
+
+    #specialistPopup .header {
+      font-weight: 600;
+      color: #0071e3;
+    }
+
+    #specialistPopup .info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #specialistPopup .info span {
+      font-size: 35px;
+    }
+
+    #specialistPopup .details {
+      font-size: 14px;
+      line-height: 1.4;
+      color: #333;
+    }
+
     @media(max-width:600px){
       h1{font-size:36px;}
       .container{padding:25px;}
@@ -303,6 +343,19 @@
     <footer>© 2025 MindSync AI — creat cu grijă pentru echilibru mental 💙</footer>
   </section>
 
+  <!-- POPUP SPECIALIST -->
+  <div id="specialistPopup">
+    <div class="header">Daca te simti coplesit , recomandăm unul din specialiștii noștri</div>
+    <div class="info">
+      <span>👨‍⚕️</span>
+      <div class="details">
+        <strong>Dr. Popescu Ștefan</strong><br>
+        Psiholog<br>
+        📞 0777 777 777
+      </div>
+    </div>
+  </div>
+
   <script>
     const intro = document.getElementById('intro');
     const chat = document.getElementById('chat');
@@ -311,6 +364,7 @@
     const toResources = document.getElementById('toResources');
     const send = document.getElementById('send');
     const chatBox = document.getElementById('chatBox');
+    const popup = document.getElementById('specialistPopup');
 
     function showPage(from, to, animation) {
       from.classList.remove('active');
@@ -332,6 +386,12 @@
       if (!txt) return;
       addMessage(txt, 'user');
       document.getElementById('feelings').value = '';
+
+      // Afișează popup-ul specialistului
+      popup.style.display = 'flex';
+      setTimeout(() => {
+        popup.style.display = 'none';
+      }, 12000); // dispare după 12 secunde
 
       try {
         const res = await fetch('/chat', {
