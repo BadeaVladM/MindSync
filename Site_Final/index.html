@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MindSync AI 🧠</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600&display=swap');
+
+    :root {
+      --accent: #0071e3;
+      --background: #f5f5f7;
+      --text: #1d1d1f;
+      --radius: 20px;
+    }
+
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--background);
+      color: var(--text);
+      overflow-x: hidden;
+      transition: background-color 1s ease;
+    }
+
+    section {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      text-align: center;
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      transition: all 1s ease;
+      opacity: 0;
+      transform: translateY(40px);
+      pointer-events: none;
+    }
+
+    section.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      z-index: 2;
+    }
+
+    .fade-in { animation: fadeIn 1.2s forwards; }
+    .slide-in { animation: slideIn 1.2s forwards; }
+    .zoom-in { animation: zoomIn 1.5s forwards; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(80px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes zoomIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    #intro .emoji {
+      font-size: 80px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    #intro h1 {
+      font-size: 50px;
+      font-weight: 600;
+      margin: 20px 0;
+    }
+
+    #intro p {
+      font-size: 18px;
+      color: #555;
+      max-width: 600px;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    input, select {
+      padding: 10px 16px;
+      border-radius: 12px;
+      border: 1px solid #d2d2d7;
+      font-size: 16px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0,113,227,0.2);
+    }
+
+    .btn {
+      background-color: var(--accent);
+      color: white;
+      padding: 14px 36px;
+      border-radius: 30px;
+      font-size: 18px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn:hover {
+      background-color: #005bb5;
+      box-shadow: 0 8px 24px rgba(0,113,227,0.25);
+      transform: translateY(-2px);
+    }
+
+    #chat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: linear-gradient(to bottom right, #f5f5f7, #eaf3ff);
+    }
+
+    .container {
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(20px);
+      padding: 40px;
+      border-radius: var(--radius);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      max-width: 650px;
+      width: 90%;
+    }
+
+    textarea {
+      width: 100%;
+      height: 120px;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      margin-top: 20px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0,113,227,0.2);
+    }
+
+    .chat-box {
+      margin-top: 30px;
+      background: #f9f9fb;
+      border-radius: 12px;
+      padding: 20px;
+      max-height: 250px;
+      overflow-y: auto;
+      text-align: left;
+      font-size: 15px;
+      border: 1px solid #e3e3e8;
+    }
+
+    .msg { margin-bottom: 15px; line-height: 1.5; }
+    .msg.user { text-align: right; color: #0071e3; font-weight: 500; }
+    .msg.ai { color: #333; }
+
+    .nextBtn {
+      margin-top: 20px;
+      background-color: #00c060;
+    }
+    .nextBtn:hover {
+      background-color: #00a450;
+    }
+
+    #resources {
+      background: linear-gradient(to bottom right, #eaf3ff, #f9f9fb);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 100px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      max-width: 900px;
+      width: 90%;
+      margin-top: 40px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+      padding: 25px;
+      transition: transform 0.4s ease;
+    }
+
+    .card:hover { transform: translateY(-5px); }
+
+    .card h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      font-size: 15px;
+      color: #555;
+    }
+
+    footer {
+      margin-top: 60px;
+      font-size: 14px;
+      color: #777;
+    }
+
+    @media(max-width:600px){
+      h1{font-size:36px;}
+      .container{padding:25px;}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PAGE 1 -->
+  <section id="intro" class="active fade-in">
+    <div class="emoji">🧠</div>
+    <h1>Bun venit la MindSync</h1>
+    <p>Explorăm împreună echilibrul emoțional — calm, conștiență și grijă față de tine.</p>
+
+    <div class="input-row">
+      <input type="number" id="age" placeholder="Vârstă" min="16" max="60">
+      <select id="gender">
+        <option value="">Gen</option>
+        <option value="female">Femeie</option>
+        <option value="male">Bărbat</option>
+        <option value="other">Altul</option>
+      </select>
+    </div>
+
+    <button class="btn" id="toChat">Începe conversația</button>
+  </section>
+
+  <!-- PAGE 2 -->
+  <section id="chat">
+    <div class="container">
+      <h1>Conversație cu MindSync 🤖</h1>
+      <p>Spune-mi ce simți acum. Sunt aici să te ascult fără judecată.</p>
+      <textarea id="feelings" placeholder="Ex: Mă simt copleșit, am anxietate, nu am energie..."></textarea>
+      <div class="button-row">
+        <button class="btn" id="send">Trimite</button>
+        <button class="btn nextBtn" id="toResources">Resurse utile</button>
+      </div>
+      <div class="chat-box" id="chatBox">
+        <div class="msg ai">👋 Salut! Sunt aici pentru tine, poți să îmi spui tot ce simți!</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 3 -->
+  <section id="resources">
+    <h1>🌿 Resurse pentru echilibru interior</h1>
+    <p>Tehnici, exerciții și recomandări care pot aduce calmul înapoi.</p>
+
+    <div class="cards">
+      <div class="card">
+        <h3>🌬️ Respirație 4-7-8</h3>
+        <p>Inspiră 4 secunde, ține respirația 7 secunde, expiră 8. Repetă de 4 ori.</p>
+      </div>
+      <div class="card">
+        <h3>🎧 Sunete liniștitoare</h3>
+        <p><a href="https://www.youtube.com/watch?v=1ZYbU82GVz4" target="_blank">Ascultă ploaia calmă</a> pentru relaxare imediată.</p>
+      </div>
+      <div class="card">
+        <h3>🧘 Meditație ghidată</h3>
+        <p>Încearcă o sesiune de 5 minute pe <a href="https://www.headspace.com" target="_blank">Headspace</a> sau <a href="https://www.calm.com" target="_blank">Calm</a>.</p>
+      </div>
+      <div class="card">
+        <h3>💬 Suport real</h3>
+        <p>Dacă starea persistă, poți discuta anonim cu specialiști pe <a href="https://deprehub.ro/" target="_blank">DepreHub</a>.</p>
+      </div>
+    </div>
+
+    <footer>© 2025 MindSync AI — creat cu grijă pentru echilibru mental 💙</footer>
+  </section>
+
+  <script>
+    const intro = document.getElementById('intro');
+    const chat = document.getElementById('chat');
+    const resources = document.getElementById('resources');
+    const toChat = document.getElementById('toChat');
+    const toResources = document.getElementById('toResources');
+    const send = document.getElementById('send');
+    const chatBox = document.getElementById('chatBox');
+
+    function showPage(from, to, animation) {
+      from.classList.remove('active');
+      to.classList.add('active', animation);
+      setTimeout(() => to.classList.remove(animation), 1000);
+    }
+
+    toChat.addEventListener('click', () => {
+      const age = document.getElementById('age').value.trim();
+      const gender = document.getElementById('gender').value;
+      if (!age || !gender) return alert('Completează vârsta și genul pentru o experiență personalizată 💫');
+      showPage(intro, chat, 'slide-in');
+    });
+
+    toResources.addEventListener('click', () => showPage(chat, resources, 'zoom-in'));
+
+    send.addEventListener('click', async () => {
+      const txt = document.getElementById('feelings').value.trim();
+      if (!txt) return;
+      addMessage(txt, 'user');
+      document.getElementById('feelings').value = '';
+
+      try {
+        const res = await fetch('/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: txt })
+        });
+        const data = await res.json();
+        if (data.reply) {
+          typeAI(data.reply, chatBox);
+        } else {
+          typeAI("Eroare la server. Încearcă din nou 🕊️", chatBox);
+        }
+      } catch (err) {
+        typeAI("Nu pot contacta serverul. Verifică conexiunea 💭", chatBox);
+      }
+    });
+
+    function addMessage(text, type) {
+      const msg = document.createElement('div');
+      msg.classList.add('msg', type);
+      msg.textContent = text;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function typeAI(text, container) {
+      const msg = document.createElement('div');
+      msg.classList.add('msg', 'ai');
+      container.appendChild(msg);
+      let i = 0;
+      const interval = setInterval(() => {
+        msg.textContent += text[i];
+        i++;
+        container.scrollTop = container.scrollHeight;
+        if (i >= text.length) clearInterval(interval);
+      }, 25);
+    }
+  </script>
+
+  <!-- ===== ACCESIBILITATE ===== -->
+  <style>
+    #accessibilityBtn {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: #0071e3;
+      color: white;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0, 113, 227, 0.3);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+    #accessibilityBtn:hover { background-color: #005bb5; transform: scale(1.05); }
+    #accessibilityMenu {
+      position: fixed;
+      bottom: 95px;
+      right: 25px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      padding: 10px;
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 999;
+    }
+    #accessibilityMenu button {
+      background: #0071e3;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    #accessibilityMenu button:hover { background-color: #005bb5; }
+    .bold-text * { font-weight: 700 !important; }
+  </style>
+
+  <button id="accessibilityBtn" title="Opțiuni de accesibilitate">♿</button>
+  <div id="accessibilityMenu">
+    <button id="speechBtn">🎤 Vorbește</button>
+    <button id="boldBtn">🔠 Text îngroșat</button>
+  </div>
+
+  <script>
+    const accBtn = document.getElementById('accessibilityBtn');
+    const accMenu = document.getElementById('accessibilityMenu');
+    const speechBtn = document.getElementById('speechBtn');
+    const boldBtn = document.getElementById('boldBtn');
+    const feelingsInput = document.getElementById('feelings');
+
+    accBtn.addEventListener('click', () => {
+      accMenu.style.display = accMenu.style.display === 'flex' ? 'none' : 'flex';
+    });
+
+    boldBtn.addEventListener('click', () => {
+      document.body.classList.toggle('bold-text');
+      boldBtn.textContent = document.body.classList.contains('bold-text')
+        ? '🔠 Text normal'
+        : '🔠 Text îngroșat';
+    });
+
+    speechBtn.addEventListener('click', () => {
+      if (!('webkitSpeechRecognition' in window)) {
+        alert('Recunoașterea vocală nu este suportată în acest browser 😔\nFolosește Google Chrome.');
+        return;
+      }
+
+      const recognition = new webkitSpeechRecognition();
+      recognition.lang = 'ro-RO';
+      recognition.interimResults = false;
+      recognition.start();
+
+      speechBtn.textContent = '🎙️ Ascult...';
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        if (feelingsInput) feelingsInput.value = transcript;
+        speechBtn.textContent = '🎤 Vorbește';
+      };
+
+      recognition.onerror = () => {
+        speechBtn.textContent = '🎤 Vorbește';
+        alert('Eroare la recunoașterea vocală. Încearcă din nou.');
+      };
+
+      recognition.onend = () => {
+        speechBtn.textContent = '🎤 Vorbește';
+      };
+    });
+  </script>
+</body>
+</html>
